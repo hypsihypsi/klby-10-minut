@@ -1,0 +1,13 @@
+{
+  "name": "10 minút pre kĺby",
+  "short_name": "Kĺby",
+  "lang": "sk",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4efe4",
+  "theme_color": "#2c6a5c",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
