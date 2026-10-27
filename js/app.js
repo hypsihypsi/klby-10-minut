@@ -4,7 +4,7 @@
   const $ = (s, el = document) => el.querySelector(s);
   const app = $('#app');
   const KEY = 'klby10.v1';
-  const S = Object.assign({ done: {}, next: 0, voice: true, seen: {}, intro: false, cas: '08:00' }, load());
+  const S = Object.assign({ done: {}, next: 0, voice: true, seen: {}, intro: false, cas: '08:00', tema: 'light' }, load());
 
   function load() {
     try {
@@ -58,7 +58,7 @@
     el: null,
     rad: [],
     init() {
-      fetch('audio/index.json')
+      this.ready = fetch('audio/index.json')
         .then(r => (r.ok ? r.json() : {}))
         .then(j => (this.nahravky = j))
         .catch(() => {});
@@ -173,13 +173,12 @@
       cells += `<span class="day${done ? ' done' : ''}${isT ? ' today' : ''}${fut ? ' fut' : ''}" title="${d.toLocaleDateString('sk-SK')}">${d.getDate()}</span>`;
     }
     const hd = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'].map(x => `<span class="dh">${x}</span>`).join('');
-    return `<section class="card cal"><h3>Posledných päť týždňov</h3><div class="grid">${hd}${cells}</div><p class="muted">Tento týždeň: ${week} ${dni(week)}. Vynechaný deň nevadí – pokračuj ďalšou zostavou.</p></section>`;
+    return `<section class="card cal"><h3>Posledných päť týždňov</h3><div class="grid">${hd}${cells}</div><p class="muted">Tento týždeň: ${week} ${dni(week)}. Keď nejaký deň vynecháš, nič sa nedeje – proste pokračuj ďalej.</p></section>`;
   }
 
   function viewHome() {
     nav('dnes');
     const now = new Date(), hod = now.getHours();
-    const pozdrav = hod < 10 ? 'Dobré ráno' : hod < 18 ? 'Dobrý deň' : 'Dobrý večer';
     const datum = now.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
     const zid = ORDER[S.next % ORDER.length], z = ZOSTAVY[zid];
     const dnes = S.done[today()];
@@ -188,23 +187,23 @@
 
     const intro = S.intro ? '' : `
       <section class="card intro">
-        <h3>Ako to funguje</h3>
+        <h3>Mami, ako to funguje</h3>
         <ol>
-          <li>Každý deň jedna zostava na 10 minút. Zostavy sa striedajú: A, B, C, D a znova.</li>
-          <li>Prvé dva týždne sa uč cviky, nie výkon. Pri každom cviku si v pokoji prečítaj „Ako na to“ – pri prvom stretnutí s cvikom dostaneš aj viac času na prípravu.</li>
-          <li>Telefón polož tak, aby si naň videla. Hlas ťa prevedie a pípne, keď je čas na ďalší cvik.</li>
-          <li>Keď vynecháš deň, nič sa nedeje. Pokračuješ tam, kde si skončila.</li>
+          <li>Každý deň len 10 minút. Zostavy sa samé striedajú – A, B, C, D a znova dokola, nemusíš nič vyberať.</li>
+          <li>Prvé dva týždne nejde o výkon, ale aby si sa cviky naučila. Pri každom si v pohode prečítaj „Ako na to“ – keď je cvik nový, máš aj viac času na prípravu.</li>
+          <li>Mobil si polož tak, aby si naň videla. Hlas ťa prevedie a pípne, keď ide ďalší cvik.</li>
+          <li>Keď deň vynecháš, kľudne – nič sa nedeje. Pokračuješ tam, kde si skončila. Hlavne sa na to nevykašli úplne :)</li>
         </ol>
-        <button class="btn ghost" data-act="intro">Rozumiem</button>
+        <button class="btn ghost" data-act="intro">Jasné, ideme</button>
       </section>`;
 
     app.innerHTML = `
       <header class="hello">
         <p class="eyebrow">${datum}</p>
-        <h1>${pozdrav}</h1>
+        <h1>Ahoj mami</h1>
       </header>
       ${intro}
-      ${dnes ? `<p class="donebar">Dnes máš odcvičené <span>✓</span></p>` : ''}
+      ${dnes ? `<p class="donebar">Dnes máš hotovo, super <span>✓</span></p>` : ''}
       <section class="card today">
         <p class="eyebrow">${dnes ? 'Ďalšia zostava' : 'Dnešné cvičenie'} · zostava ${zid} · asi ${zMin(z)} minút</p>
         <h2>${z.nazov}</h2>
@@ -225,7 +224,7 @@
         <h3>Vedela si?</h3>
         <p>${tip}</p>
       </section>
-      ${pocet ? '' : '<p class="muted center small">Tip: na mobile si stránku pridaj na plochu (Zdieľať → Pridať na plochu). Bude sa otvárať ako appka.</p>'}
+      ${pocet ? '' : '<p class="muted center small">Tip: daj si to na plochu (Zdieľať → Pridať na plochu), potom sa to otvára ako normálna appka.</p>'}
     `;
     const ib = $('[data-act="intro"]');
     if (ib) ib.onclick = () => {
@@ -319,8 +318,8 @@
       </section>
       <section class="card">
         <h3>Ako sa to stane zvykom</h3>
-        <p>Priviaž cvičenie k niečomu, čo robíš každý deň – napríklad hneď po rannej káve alebo pred obedom. Rovnaký čas, rovnaké miesto. Podložku a loptičku nechaj tam, kde ich uvidíš.</p>
-        <p>Keď nie je chuť, urob aspoň <a href="#/zostava/K">krátku verziu</a>. Často sa ukáže, že potom chceš pokračovať.</p>
+        <p>Najlepšie to ide, keď to spojíš s niečím, čo aj tak robíš každý deň – napríklad hneď po rannej káve. Rovnaký čas, rovnaké miesto. Podložku a loptičku nechaj tam, kde ich uvidíš, nech nemusíš nič hľadať.</p>
+        <p>Keď sa ti nechce, daj aspoň <a href="#/zostava/K">krátku verziu</a> – sú to štyri minúty. Väčšinou potom zistíš, že by si aj pokračovala.</p>
         <h4>Pripomienka v kalendári</h4>
         <p class="muted">Pridá do kalendára v mobile denné upozornenie.</p>
         <div class="row"><label class="time">Čas <input type="time" id="cas" value="${S.cas}"></label><button class="btn ghost" id="ics">Pridať do kalendára</button></div>
@@ -339,15 +338,26 @@
       </section>
       <section class="card">
         <h3>Nastavenia</h3>
+        <h4>Vzhľad</h4>
+        <div class="seg" role="radiogroup">
+          ${[['light', 'Svetlý'], ['dark', 'Tmavý'], ['auto', 'Podľa telefónu']].map(([v, l]) => `<label><input type="radio" name="tema" value="${v}" ${S.tema === v ? 'checked' : ''}><span>${l}</span></label>`).join('')}
+        </div>
+        <h4>Zvuk</h4>
         <label class="switch"><input type="checkbox" id="voice" ${S.voice ? 'checked' : ''}><span>Hlasové pokyny a pípanie</span></label>
         <div class="row"><button class="btn ghost" id="test">Vyskúšať hlas</button></div>
         <p class="muted small" id="vinfo"></p>
       </section>
       <section class="card">
         <h3>Dôležité</h3>
-        <p>Toto sú všeobecné cviky na udržanie pohyblivosti, nie liečba. Ak máš bolesť, ktorá neprechádza, umelý kĺb, čerstvý úraz alebo operáciu, osteoporózu či závraty, ukáž cviky lekárovi alebo fyzioterapeutovi a nechaj si poradiť, čo vynechať.</p>
+        <p>Mami, toto sú cviky na udržanie kĺbov v pohybe, nie liečba. Ak máš bolesť, ktorá neprechádza, umelý kĺb, čerstvý úraz alebo operáciu, osteoporózu či závraty, ukáž cviky lekárovi alebo fyzioterapeutovi a nechaj si poradiť, čo vynechať.</p>
         <p class="muted small">Záznamy o cvičení sú uložené len v tomto prehliadači.</p>
       </section>`;
+    app.querySelectorAll('input[name="tema"]').forEach(r => (r.onchange = () => {
+      S.tema = r.value;
+      save();
+      if (r.value === 'auto') delete document.documentElement.dataset.theme;
+      else document.documentElement.dataset.theme = r.value;
+    }));
     $('#voice').onchange = e => {
       S.voice = e.target.checked;
       save();
@@ -357,16 +367,20 @@
       const was = S.voice;
       S.voice = true;
       beep();
-      Hlas.say('Dobrý deň. Takto budem hovoriť počas cvičenia.');
+      Hlas.say('Ahoj mami. Takto ti budem hovoriť počas cvičenia.');
       S.voice = was;
     };
-    $('#vinfo').textContent = Object.keys(Hlas.nahravky).length
-      ? 'Hlas: nahrávky ElevenLabs.'
-      : !('speechSynthesis' in window)
-      ? 'Tento prehliadač nevie čítať nahlas – budú fungovať len pípnutia.'
-      : Hlas.voice
-        ? `Hlas: ${Hlas.voice.name}`
-        : 'Slovenský hlas sa nenašiel. Ak hlas nepočuješ, v nastaveniach telefónu doinštaluj slovenský hlas (Prevod textu na reč).';
+    const vinfo = () => {
+      $('#vinfo').textContent = Object.keys(Hlas.nahravky).length
+        ? 'Hlas: nahrávky ElevenLabs.'
+        : !('speechSynthesis' in window)
+        ? 'Tento prehliadač nevie čítať nahlas – budú fungovať len pípnutia.'
+        : Hlas.voice
+          ? `Hlas: ${Hlas.voice.name}`
+          : 'Slovenský hlas sa nenašiel. Ak hlas nepočuješ, v nastaveniach telefónu doinštaluj slovenský hlas (Prevod textu na reč).';
+    };
+    vinfo();
+    Hlas.ready.then(() => app.contains($('#vinfo')) && vinfo());
     $('#cas').onchange = e => {
       S.cas = e.target.value || '08:00';
       save();
@@ -497,10 +511,10 @@
   }
 
   const FEEL = {
-    lahko: 'Výborne. Keď to bude ľahké niekoľko dní po sebe, skús pri niektorých cvikoch ťažšiu verziu – nájdeš ju v popise cviku.',
-    akurat: 'Presne tak to má byť. Zajtra ďalšia zostava.',
-    narocne: 'Zajtra spomaľ a zmenši rozsah. Aj polovica stačí – hlavné je, že sa hýbeš.',
-    bolelo: 'Ten cvik zatiaľ rob v menšom rozsahu alebo ho vynechaj. Ak bolesť neprejde do ďalšieho dňa, poraď sa s lekárom alebo fyzioterapeutom.',
+    lahko: 'Paráda. Keď to bude ľahké pár dní po sebe, skús pri niektorých cvikoch ťažšiu verziu – je napísaná pri každom cviku.',
+    akurat: 'Presne tak to má byť. Zajtra ide ďalšia zostava.',
+    narocne: 'Tak zajtra pomalšie a menej. Aj polovica stačí – hlavné je, že sa hýbeš.',
+    bolelo: 'Ten cvik zatiaľ rob menej alebo ho kľudne vynechaj. A keď to neprejde do ďalšieho dňa, zavolaj mi a zájdi k doktorovi alebo fyzioterapeutovi.',
   };
 
   function askClose() {
@@ -640,7 +654,7 @@
       <div class="done-box">
         <p class="eyebrow">${P.zid ? (ZOSTAVY[P.zid].kratka ? 'Krátka verzia' : 'Zostava ' + P.zid) : 'Precvičené'}</p>
         <h2>Hotovo</h2>
-        ${P.zid ? `<p class="lead">${partial ? 'Aj kúsok sa ráta. Zapísané.' : 'Dnešné cvičenie je za tebou.'}</p>
+        ${P.zid ? `<p class="lead">${partial ? 'Aj kúsok sa ráta. Zapísané.' : 'Dnešných 10 minút máš za sebou. Vďaka, že to robíš.'}</p>
         <h3>Ako sa ti dnes cvičilo?</h3>
         <div class="feel">
           <button class="btn ghost" data-act="feel" data-v="lahko">Ľahko</button>

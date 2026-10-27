@@ -71,7 +71,7 @@ const vety = new Set([
   'Druhá strana.',
   'Hotovo. Dnešné cvičenie je za tebou.',
   'Hotovo.',
-  'Dobrý deň. Takto budem hovoriť počas cvičenia.',
+  'Ahoj mami. Takto ti budem hovoriť počas cvičenia.',
 ]);
 for (const c of CVIKY) {
   vety.add(c.nazov + '.');

@@ -26,7 +26,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
     --bg: #161a19;
     --card: #1f2523;
     --ink: #eee9df;
@@ -339,7 +339,7 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--warm); outline-
     #f6f3ee;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
     --bg: #131917;
     --card: #1c2422;
     --ink: #ecefe9;
@@ -363,6 +363,30 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--warm); outline-
       radial-gradient(60vmax 50vmax at 70% 100%, #2a2742 0%, transparent 60%),
       #121816;
   }
+}
+:root[data-theme='dark'] {
+  --bg: #131917;
+  --card: #1c2422;
+  --ink: #ecefe9;
+  --muted: #9ba7a2;
+  --line: rgba(220, 240, 232, 0.1);
+  --accent: #8fd0bb;
+  --accent-ink: #0d1d18;
+  --accent-soft: rgba(143, 208, 187, 0.14);
+  --glass: rgba(34, 44, 41, 0.62);
+  --glass-line: rgba(255, 255, 255, 0.07);
+  --grad-btn: linear-gradient(135deg, #a5e0cc 0%, #7cc4ad 55%, #5aa892 100%);
+  --grad-hero: linear-gradient(155deg, rgba(90, 160, 138, 0.28) 0%, rgba(205, 140, 110, 0.16) 55%, rgba(140, 125, 200, 0.22) 100%);
+  --grad-tip: linear-gradient(140deg, rgba(140, 125, 200, 0.22) 0%, rgba(205, 140, 160, 0.12) 100%);
+  --grad-thumb: linear-gradient(160deg, #22302c 0%, #262420 100%);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+  --shadow-2: 0 2px 4px rgba(0, 0, 0, 0.35), 0 24px 50px -20px rgba(0, 0, 0, 0.7);
+  --glow: 0 12px 28px -10px rgba(124, 196, 173, 0.45);
+  --page:
+    radial-gradient(60vmax 50vmax at 0% 0%, #1d3a31 0%, transparent 60%),
+    radial-gradient(55vmax 45vmax at 100% 10%, #3a2a24 0%, transparent 60%),
+    radial-gradient(60vmax 50vmax at 70% 100%, #2a2742 0%, transparent 60%),
+    #121816;
 }
 
 body, .player { background: var(--page); background-attachment: fixed; }
@@ -436,3 +460,10 @@ body { padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
 .pc.main { background: var(--grad-btn); border: 0; box-shadow: var(--glow); }
 .sheet, .ask { background: rgba(20, 30, 27, 0.35); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .sheet-in, .ask-in { background: var(--card); border-radius: 30px 30px 0 0; box-shadow: var(--shadow-2); }
+
+.seg { display: flex; gap: 6px; padding: 5px; border-radius: 18px; background: var(--glass); border: 1px solid var(--line); margin-bottom: 8px; }
+.seg label { flex: 1; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg span { display: block; text-align: center; padding: 10px 6px; border-radius: 14px; font-weight: 700; font-size: 17px; color: var(--muted); }
+.seg input:checked + span { background: var(--grad-btn); color: var(--accent-ink); box-shadow: var(--glow); }
+.seg input:focus-visible + span { outline: 3px solid var(--warm); }
