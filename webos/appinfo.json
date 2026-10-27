@@ -1,0 +1,13 @@
+{
+  "id": "sk.hypsihypsi.klby10",
+  "version": "1.0.0",
+  "vendor": "hypsihypsi",
+  "type": "web",
+  "main": "index.html",
+  "title": "10 minút pre kĺby",
+  "icon": "icon80.png",
+  "largeIcon": "icon130.png",
+  "bgColor": "#f4efe4",
+  "resolution": "1920x1080",
+  "requiredACG": []
+}
