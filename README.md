@@ -4,7 +4,7 @@ Denných 10 minút pre zdravé kĺby: chodidlá a klenba, členky, ramená a rot
 Statická stránka bez build kroku – beží na GitHub Pages a dá sa pridať na plochu mobilu.
 
 ## Ako to funguje
-- Tri zostavy (A, B, C) po ~10 minút sa striedajú. Ďalšia zostava sa posunie až po odcvičení.
+- Štyri zostavy (A, B, C, D) po ~10 minút sa striedajú. Ďalšia zostava sa posunie až po odcvičení.
 - Krátka verzia (~4 min) na horšie dni.
 - Prehrávač: príprava s východiskovou polohou → cvik s časovačom, hlasovými pokynmi (slovenský hlas prehliadača) a pípaním → výmena strany.
 - Pri prvom stretnutí s cvikom je príprava dlhšia (25 s namiesto 12 s).

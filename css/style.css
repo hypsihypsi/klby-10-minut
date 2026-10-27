@@ -219,6 +219,7 @@ p { margin: 0 0 12px; }
 .an .band { fill: none; stroke: var(--band); stroke-width: 3.5; stroke-linecap: round; }
 .an .towel { fill: var(--glow); }
 .an .blk { fill: var(--block); }
+.an .blk-l { fill: none; stroke: var(--block); stroke-width: 20; }
 .an .sk-o { fill: none; stroke: var(--skin-line); stroke-linecap: round; stroke-linejoin: round; }
 .an .sk { fill: none; stroke: var(--skin); stroke-linecap: round; stroke-linejoin: round; }
 .an .sk-f { fill: var(--skin); stroke: var(--skin-line); stroke-width: 2; }

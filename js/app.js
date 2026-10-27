@@ -20,7 +20,7 @@
   }
 
   const byId = Object.fromEntries(CVIKY.map(c => [c.id, c]));
-  const ORDER = ['A', 'B', 'C'];
+  const ORDER = ['A', 'B', 'C', 'D'];
   const PREP = 12, PREP_NEW = 25, SWITCH = 6;
 
   const dkey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -154,7 +154,7 @@
     const now = new Date(), hod = now.getHours();
     const pozdrav = hod < 10 ? 'Dobré ráno' : hod < 18 ? 'Dobrý deň' : 'Dobrý večer';
     const datum = now.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
-    const zid = ORDER[S.next % 3], z = ZOSTAVY[zid];
+    const zid = ORDER[S.next % ORDER.length], z = ZOSTAVY[zid];
     const dnes = S.done[today()];
     const pocet = Object.keys(S.done).length;
     const tip = TIPY[Math.floor(+now / 864e5) % TIPY.length];
@@ -163,7 +163,7 @@
       <section class="card intro">
         <h3>Ako to funguje</h3>
         <ol>
-          <li>Každý deň jedna zostava na 10 minút. Zostavy sa striedajú: A, B, C a znova.</li>
+          <li>Každý deň jedna zostava na 10 minút. Zostavy sa striedajú: A, B, C, D a znova.</li>
           <li>Prvé dva týždne sa uč cviky, nie výkon. Pri každom cviku si v pokoji prečítaj „Ako na to“ – pri prvom stretnutí s cvikom dostaneš aj viac času na prípravu.</li>
           <li>Telefón polož tak, aby si naň videla. Hlas ťa prevedie a pípne, keď je čas na ďalší cvik.</li>
           <li>Keď vynecháš deň, nič sa nedeje. Pokračuješ tam, kde si skončila.</li>
@@ -596,7 +596,7 @@
     if (P.fig) P.fig.pause();
     if (P.zid) {
       S.done[today()] = { z: P.zid };
-      if (!ZOSTAVY[P.zid].kratka && P.zid === ORDER[S.next % 3]) S.next = (S.next + 1) % 3;
+      if (!ZOSTAVY[P.zid].kratka && P.zid === ORDER[S.next % ORDER.length]) S.next = (S.next + 1) % ORDER.length;
       save();
     }
     if (!partial) beep(990, 0.35);

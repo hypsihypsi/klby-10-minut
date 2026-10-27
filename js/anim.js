@@ -43,7 +43,7 @@
      Pohľad spredu (view:'front'): 1 = vľavo na obrázku.
      Uhly končatín: 0 = smerom dole, kladné = dopredu (spredu: do strany). */
   const BODY = {
-    hx: 150, hy: 125, tr: 0, tb: 0, hd: 0, ht: 0, htl: 0, nose: 0, se: 0, sp: 0,
+    hx: 150, hy: 125, tr: 0, ts: 1, tb: 0, hd: 0, ht: 0, htl: 0, nose: 0, se: 0, sp: 0,
     ua1: 4, fa1: 4, ua2: -4, fa2: -4, sua1: 1, sfa1: 1, sua2: 1, sfa2: 1, eb1: -1, eb2: -1,
     t1x: 162, t1y: FLOOR, t2x: 157, t2y: FLOOR, ft1: 0, ft2: 0, kb1: 1, kb2: 1,
     th1: 0, sh1: 0, th2: 0, sh2: 0, sth1: 1, ssh1: 1, sth2: 1, ssh2: 1,
@@ -54,7 +54,7 @@
     const H = { x: p.hx, y: p.hy };
     const up = { x: Math.sin(p.tr * R), y: -Math.cos(p.tr * R) };
     const fw = { x: Math.cos(p.tr * R), y: Math.sin(p.tr * R) };
-    const N = add(H, up, L.torso);
+    const N = add(H, up, L.torso * p.ts);
     const J = { H, N, up, fw };
 
     if (front) {
@@ -139,6 +139,10 @@
         const c = at(pr.at), op = pr.op ? ` style="opacity:${n(0.35 * p[pr.op])}"` : '';
         return `<circle class="glow" cx="${n(c.x)}" cy="${n(c.y)}" r="${pr.r || 15}"${op}/>`;
       }
+      case 'blockAt': {
+        const c = at(pr.at), w = pr.w || 14, h = pr.h || 26;
+        return `<rect class="blk" x="${n(c.x - w / 2)}" y="${n(c.y - h / 2)}" width="${w}" height="${h}" rx="3"/>`;
+      }
       case 'blockK': {
         const c = mix(J.K1, J.K2, 0.5);
         return `<rect class="blk" x="${n(c.x - 7)}" y="${n(c.y - 13)}" width="14" height="26" rx="3"/>`;
@@ -199,7 +203,7 @@
   }
 
   /* ---------- Chodidlo zboku (vnútorná strana) ---------- */
-  const FOOT = { arch: 0, t1: 0, t2: 0, hl: 0, ank: 0, lift: 0, fx: 0, ball: 0, air: 0, circle: 0, ca: 0 };
+  const FOOT = { arch: 0, t1: 0, t2: 0, hl: 0, ank: 0, lift: 0, fx: 0, ball: 0, air: 0, circle: 0, ca: 0, blok: 0, band: 0 };
 
   function drawFoot(p) {
     const a = p.arch, bs = -7 * a, ay = n(193 - 16 * a);
@@ -207,7 +211,7 @@
     const piv = p.air ? ankle : ballPt, ang = p.air ? -p.ank : p.hl;
     const dx = p.fx, dy = -p.lift;
     const T = q => add(add(piv, rot({ x: q.x - piv.x, y: q.y - piv.y }, ang)), { x: dx, y: dy });
-    const floorY = 200 + (p.air ? 22 : 0);
+    const floorY = p.blok ? 236 : 200 + (p.air ? 22 : 0);
     const gA = T(ankle);
     const top = { x: p.air ? gA.x : 98 + dx, y: -30 };
     const toe = (base, deg, len) => {
@@ -218,15 +222,17 @@
     const outline = `M86 132 L70 158 Q60 198 92 198 C116 198 126 ${ay} 150 ${ay} C172 ${ay} ${178 + bs} 198 ${194 + bs} 198 L${206 + bs} 198 L${206 + bs} 182 Q164 160 124 130 Z`;
 
     let s = `<line class="floor" x1="0" y1="${floorY + 1.5}" x2="300" y2="${floorY + 1.5}"/>`;
+    if (p.blok) s += `<rect class="blk" x="30" y="199" width="171" height="37" rx="3"/>`;
     if (p.ball) s += `<circle class="ball spiky" cx="150" cy="186" r="13" style="stroke-dashoffset:${n(-p.fx * 0.8)}"/>`;
     s += skin([top, gA], 44);
     s += `<g transform="translate(${n(dx)} ${n(dy)}) rotate(${n(ang)} ${piv.x} ${piv.y})">`;
     s += `<path class="toe2" d="M${P(tb2)} L${P(toe(tb2, p.t2, 22))}"/>`;
     s += `<path class="sk-f" d="${outline}"/>`;
-    s += `<ellipse class="glow" cx="148" cy="${n(ay + 4)}" rx="32" ry="9" opacity="${n(a)}"/>`;
+    if (a > 0.01) s += `<ellipse class="glow" cx="148" cy="${n(ay + 4)}" rx="32" ry="9" style="opacity:${n(0.45 * a)}"/>`;
     s += `<circle class="bone" cx="106" cy="150" r="5"/>`;
     s += skin([tb1, toe(tb1, p.t1, 27)], 12);
     s += `</g>`;
+    if (p.band) s += `<path class="band" d="M${P(T(toe(tb1, p.t1, 18)))} L296 236"/>`;
     if (a > 0.2) s += `<text class="lbl" x="150" y="228" text-anchor="middle" opacity="${n(a)}">klenba sa dvíha</text>`;
     if (p.circle > 0.01) {
       const cx = 230, cy = 191 - p.lift - 4;
@@ -237,7 +243,7 @@
   }
 
   /* ---------- Ruka zboku, predlaktie na stole ---------- */
-  const HAND = { w: 0, fg: 0, press: 0 };
+  const HAND = { w: 0, fg: 0, press: 0, blk: 0 };
 
   function drawHand(p) {
     const W = { x: 180, y: 104 };
@@ -247,6 +253,13 @@
     let s = `<line class="floor" x1="0" y1="${FLOOR + 3.5}" x2="300" y2="${FLOOR + 3.5}"/>`;
     s += `<rect class="pf" x="-10" y="118" width="186" height="12" rx="3"/><path class="prop" d="M24 130 L24 ${FLOOR + 3} M158 130 L158 ${FLOOR + 3}"/>`;
     s += skin([{ x: 6, y: 104 }, W], 24);
+    if (p.blk) {
+      const f = add(W, dir(p.w), 16), b = add(f, dir(p.w + 90), 86);
+      s += `<path class="blk-l" d="M${P(add(f, dir(p.w + 90), -14))} L${P(b)}"/>`;
+      s += skin([W, f], 22) + `<circle class="sk-f" cx="${n(f.x)}" cy="${n(f.y)}" r="15"/>`;
+      s += `<text class="lbl" x="250" y="226" text-anchor="middle">palec hore</text>`;
+      return s;
+    }
     s += skin([tb, tt], 9);
     s += skin([W, pe], 22) + skin([pe, tip], 12);
     if (p.press > 0.01) {
@@ -275,21 +288,27 @@
   }
 
   /* ---------- Dlaň spredu s loptičkou ---------- */
-  const GRIP = { sq: 0, curl: 0, spread: 0, band: 0 };
+  const GRIP = { sq: 0, curl: 0, spread: 0, band: 0, ball: 1, table: 0, l1: 0, l2: 0, l3: 0, l4: 0, lt: 0 };
 
   function drawGrip(p) {
     const base = [{ x: 126, y: 110 }, { x: 142, y: 104 }, { x: 158, y: 104 }, { x: 174, y: 110 }];
     const len = [38, 46, 44, 34], spr = [-1.5, -0.5, 0.5, 1.5];
     const tips = base.map((b, i) => {
-      const a = spr[i] * (4 + 9 * p.spread), l = len[i] * (1 - 0.62 * p.curl);
+      const a = spr[i] * (4 + 9 * p.spread), l = len[i] * (1 - 0.62 * p.curl) * (1 + 0.25 * p['l' + (i + 1)]);
       return add(b, { x: Math.sin(a * R) * l, y: -Math.cos(a * R) * l });
     });
     const tb = { x: 118, y: 158 }, ta = -58 - 16 * p.spread + 34 * p.curl, tl = 36 * (1 - 0.3 * p.curl);
     const ttip = add(tb, { x: Math.sin(ta * R) * tl, y: -Math.cos(ta * R) * tl });
-    let s = skin([{ x: 150, y: 190 }, { x: 150, y: 260 }], 50);
-    s += `<circle class="ball spiky" cx="150" cy="${n(132 + 6 * p.curl)}" r="${n(41 * (1 - 0.1 * p.sq))}"/>`;
-    tips.forEach((t, i) => (s += skin([base[i], t], 13)));
+    let s = p.table ? `<rect class="pf" x="0" y="0" width="300" height="240"/>` : '';
+    s += skin([{ x: 150, y: 190 }, { x: 150, y: 260 }], 50);
+    if (p.ball) s += `<circle class="ball spiky" cx="150" cy="${n(132 + 6 * p.curl)}" r="${n(41 * (1 - 0.1 * p.sq))}"/>`;
+    tips.forEach((t, i) => {
+      s += skin([base[i], t], 13);
+      const l = p['l' + (i + 1)];
+      if (l > 0.05) s += `<circle class="glow" cx="${n(t.x)}" cy="${n(t.y)}" r="11" style="opacity:${n(0.6 * l)}"/>`;
+    });
     s += skin([tb, ttip], 14);
+    if (p.lt > 0.05) s += `<circle class="glow" cx="${n(ttip.x)}" cy="${n(ttip.y)}" r="11" style="opacity:${n(0.6 * p.lt)}"/>`;
     s += `<rect class="sk-f" x="112" y="102" width="76" height="92" rx="26"/>`;
     if (p.band > 0.01) {
       const ring = [ttip, ...tips];
@@ -299,7 +318,7 @@
   }
 
   /* ---------- Otvorená kniha, pohľad od hlavy ---------- */
-  const BOOK = { a: -45 };
+  const BOOK = { a: -45, band: 0, ball: 0 };
 
   function drawBook(p) {
     const sh = { x: 150, y: 132 };
@@ -309,7 +328,9 @@
     let s = `<line class="floor" x1="0" y1="${FLOOR + 3.5}" x2="300" y2="${FLOOR + 3.5}"/>`;
     s += `<rect class="mat" x="16" y="${FLOOR + 2}" width="268" height="6" rx="3"/>`;
     s += `<g transform="rotate(${n(-chest)} 150 178)"><ellipse class="torso-x" cx="150" cy="168" rx="24" ry="44"/></g>`;
-    s += `<circle class="knee" cx="226" cy="186" r="15"/><text class="lbl" x="226" y="160" text-anchor="middle">kolená</text>`;
+    if (p.ball)
+      s += `<circle class="knee" cx="226" cy="200" r="13"/><circle class="knee" cx="226" cy="158" r="13"/><circle class="ball" cx="226" cy="179" r="9"/><text class="lbl" x="288" y="120" text-anchor="end">loptička medzi kolenami</text>`;
+    else s += `<circle class="knee" cx="226" cy="186" r="15"/><text class="lbl" x="226" y="160" text-anchor="middle">kolená</text>`;
     s += path([{ x: 156, y: 208 }, { x: 236, y: 209 }], 'fig arm far');
     s += `<rect class="blk" x="122" y="196" width="56" height="20" rx="4"/>`;
     s += `<circle class="head" cx="150" cy="182" r="15"/>`;
@@ -317,6 +338,7 @@
     s += `<circle class="eye" cx="${n(e.x)}" cy="${n(e.y)}" r="2.4"/>`;
     s += path([sh, hand], 'fig arm');
     s += `<circle class="hand" cx="${n(hand.x)}" cy="${n(hand.y)}" r="5"/>`;
+    if (p.band) s += `<path class="band" d="M${P(hand)} L236 209"/>`;
     s += `<text class="lbl" x="12" y="22">pohľad od hlavy</text>`;
     return s;
   }
