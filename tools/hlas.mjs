@@ -1,6 +1,7 @@
 // Vygeneruje hlasové nahrávky cez ElevenLabs pre všetky vety, ktoré appka hovorí.
-// Použitie:
-//   ELEVENLABS_API_KEY=... ELEVENLABS_VOICE_ID=... node tools/hlas.mjs
+// Použitie: kľúč daj do súboru .env v koreni projektu (riadok ELEVENLABS_API_KEY=...)
+// a spusti  node tools/hlas.mjs
+// Iný hlas: ELEVENLABS_VOICE_ID=... v .env (predvolený je Sarah; knižničné hlasy cez API len s platenou verziou).
 // Už existujúce nahrávky preskočí, takže po pridaní cviku sa dogenerujú len nové vety.
 // Ak chceš všetko nanovo (napr. iný hlas), pridaj --znova.
 
@@ -11,15 +12,52 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const envPath = join(root, '.env');
+if (existsSync(envPath))
+  for (const riadok of readFileSync(envPath, 'utf8').split(/\r?\n/)) {
+    const m = riadok.match(/^\s*([A-Z_]+)\s*=\s*["']?(.*?)["']?\s*$/);
+    if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
+  }
 const outDir = join(root, 'audio');
 const key = process.env.ELEVENLABS_API_KEY;
-const voice = process.env.ELEVENLABS_VOICE_ID;
+const voice = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL';
 const model = process.env.ELEVENLABS_MODEL || 'eleven_multilingual_v2';
 const znova = process.argv.includes('--znova');
 
-if (!key || !voice) {
-  console.error('Chýba ELEVENLABS_API_KEY alebo ELEVENLABS_VOICE_ID.');
+if (!key) {
+  console.error('Chýba ELEVENLABS_API_KEY – daj ho do súboru .env (ELEVENLABS_API_KEY=...).');
   process.exit(1);
+}
+
+// Ukážka hlasov: node tools/hlas.mjs --ukazka id1,id2 [priecinok]
+const iu = process.argv.indexOf('--ukazka');
+if (iu > -1) {
+  const ids = process.argv[iu + 1].split(','), dir = process.argv[iu + 2] || join(root, 'ukazky');
+  mkdirSync(dir, { recursive: true });
+  const text = 'Začíname. Krátka noha. Bruško palca pritiahni k päte. Drž a dýchaj. Teraz druhá strana.';
+  for (const id of ids) {
+    const res = await tts(text, id);
+    writeFileSync(join(dir, id + '.mp3'), res);
+    console.log('ukážka', id);
+  }
+  process.exit(0);
+}
+
+async function tts(text, voiceId) {
+  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_64`, {
+    method: 'POST',
+    headers: { 'xi-api-key': key, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
+    body: JSON.stringify({
+      text,
+      model_id: model,
+      voice_settings: { stability: 0.55, similarity_boost: 0.75, style: 0, use_speaker_boost: true, speed: 0.95 },
+    }),
+  });
+  if (!res.ok) {
+    console.error(`Chyba pri „${text}“: ${res.status} ${await res.text()}`);
+    process.exit(1);
+  }
+  return Buffer.from(await res.arrayBuffer());
 }
 
 const ctx = { window: {} };
@@ -48,20 +86,7 @@ console.log(`${vety.size} viet, treba vygenerovať ${nove.length} (${nove.reduce
 
 for (const [i, text] of nove.entries()) {
   const file = createHash('sha1').update(text).digest('hex').slice(0, 12) + '.mp3';
-  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_64`, {
-    method: 'POST',
-    headers: { 'xi-api-key': key, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-    body: JSON.stringify({
-      text,
-      model_id: model,
-      voice_settings: { stability: 0.55, similarity_boost: 0.75, style: 0, use_speaker_boost: true, speed: 0.95 },
-    }),
-  });
-  if (!res.ok) {
-    console.error(`Chyba pri „${text}“: ${res.status} ${await res.text()}`);
-    process.exit(1);
-  }
-  writeFileSync(join(outDir, file), Buffer.from(await res.arrayBuffer()));
+  writeFileSync(join(outDir, file), await tts(text, voice));
   index[text] = file;
   writeFileSync(indexPath, JSON.stringify(index, null, 1));
   console.log(`${i + 1}/${nove.length}  ${text}`);
