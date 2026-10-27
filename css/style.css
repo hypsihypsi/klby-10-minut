@@ -159,7 +159,7 @@ p { margin: 0 0 12px; }
 .intro ol, .rules ol { padding-left: 22px; }
 .intro li, .rules li { margin-bottom: 10px; }
 
-.stage { padding: 10px; }
+.stage { padding: 10px; overflow: hidden; }
 .fig.big { width: 100%; aspect-ratio: 300 / 240; max-height: 52vh; margin: 0 auto; }
 .fig svg, .p-fig svg { width: 100%; height: 100%; display: block; }
 .cue { text-align: center; font-weight: 700; font-size: 20px; min-height: 1.6em; margin: 6px 0 4px; color: var(--accent); }
@@ -247,7 +247,7 @@ p { margin: 0 0 12px; }
 .p-prog i.done { background: var(--accent); }
 .p-prog i.cur { background: var(--accent); opacity: 0.5; }
 .p-main { flex: 1; display: flex; flex-direction: column; max-width: 1000px; width: 100%; margin: 0 auto; padding: 0 16px; }
-.p-stage { background: var(--card); border-radius: 22px; padding: 8px 8px 2px; }
+.p-stage { background: var(--card); border-radius: 22px; padding: 8px 8px 2px; overflow: hidden; }
 .p-fig { width: 100%; aspect-ratio: 300 / 240; max-height: 40vh; margin: 0 auto; }
 .p-cue { text-align: center; font-weight: 700; font-size: 21px; color: var(--accent); min-height: 1.5em; margin: 2px 0 6px; }
 .p-info { padding: 12px 2px 0; display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'phase timer' 'name timer' 'strana timer' 'text text'; column-gap: 12px; }
@@ -294,4 +294,20 @@ p { margin: 0 0 12px; }
 }
 @media (max-height: 700px) and (max-width: 759px) {
   .p-fig { max-height: 32vh; }
+}
+
+/* veľká obrazovka (televízor) */
+button:focus-visible, a:focus-visible { outline: 4px solid var(--warm); outline-offset: 3px; }
+@media (min-width: 1280px) and (orientation: landscape) {
+  .player .p-main, .player .p-top, .player .p-ctrl { max-width: 1600px; }
+  .p-fig { max-height: 66vh; }
+  .p-cue { font-size: 32px; }
+  .p-phase { font-size: 20px; }
+  .p-name { font-size: 46px; }
+  .p-strana { font-size: 28px; }
+  .p-timer { width: 170px; height: 170px; }
+  .p-time { font-size: 44px; }
+  .p-tip.big { font-size: 36px; }
+  .p-text { font-size: 24px; }
+  .pc { min-height: 80px; font-size: 22px; }
 }

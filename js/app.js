@@ -454,6 +454,8 @@
     document.body.classList.add('playing');
     P.el = el;
     el.addEventListener('click', onPlayerClick);
+    if (document.activeElement) document.activeElement.blur();
+    $('[data-act="pause"]', el).focus({ preventScroll: true });
   }
 
   function onPlayerClick(e) {
@@ -676,6 +678,19 @@
   }
   document.addEventListener('visibilitychange', () => {
     if (P && P.timer && document.visibilityState === 'visible') lock(true);
+  });
+
+  // Ovládač TV a klávesnica počas cvičenia: OK/medzera = pauza, šípky = ďalší/predchádzajúci cvik, späť = ukončiť
+  document.addEventListener('keydown', e => {
+    if (!P || !P.timer) return;
+    const tlacidlo = document.activeElement && document.activeElement.closest('button, a');
+    const k = e.key, c = e.keyCode;
+    if (k === 'ArrowRight' || c === 417) jump(1);
+    else if (k === 'ArrowLeft' || c === 412) jump(-1);
+    else if (k === 'MediaPlayPause' || c === 179 || c === 415 || c === 19 || ((k === ' ' || k === 'Enter') && !tlacidlo)) setPaused(!P.paused);
+    else if (k === 'Escape' || k === 'Backspace' || c === 461) askClose();
+    else return;
+    e.preventDefault();
   });
 
   route();
