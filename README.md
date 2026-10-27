@@ -25,3 +25,11 @@ Statická stránka bez build kroku – beží na GitHub Pages a dá sa pridať n
 python3 -m http.server 8000
 ```
 a otvor http://localhost:8000
+
+## Hlas (ElevenLabs)
+Appka prehráva nahrávky z `audio/` (zoznam v `audio/index.json`). Ak veta nahratá nie je, prečíta ju hlas telefónu.
+Nahrávky sa generujú lokálne – kľúč sa do repa nedáva:
+```
+ELEVENLABS_API_KEY=... ELEVENLABS_VOICE_ID=... node tools/hlas.mjs
+```
+Skript preskočí už existujúce vety, takže po pridaní cviku stačí spustiť znova. `--znova` pregeneruje všetko (napr. iný hlas).

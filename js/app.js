@@ -50,9 +50,18 @@
   };
 
   /* ---------- hlas a zvuk ---------- */
+  // Nahrávky z ElevenLabs (audio/index.json, generuje tools/hlas.mjs).
+  // Keď veta nahratá nie je, prečíta ju hlas telefónu.
   const Hlas = {
     voice: null,
+    nahravky: {},
+    el: null,
+    rad: [],
     init() {
+      fetch('audio/index.json')
+        .then(r => (r.ok ? r.json() : {}))
+        .then(j => (this.nahravky = j))
+        .catch(() => {});
       if (!('speechSynthesis' in window)) return;
       const pick = () => {
         const v = speechSynthesis.getVoices();
@@ -61,16 +70,34 @@
       pick();
       speechSynthesis.onvoiceschanged = pick;
     },
+    // t: veta alebo zoznam viet, ktoré zaznejú po sebe
     say(t) {
-      if (!S.voice || !t || !('speechSynthesis' in window)) return;
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(t);
+      const casti = [].concat(t).filter(Boolean);
+      if (!S.voice || !casti.length) return;
+      this.stop();
+      if (casti.every(x => this.nahravky[x])) {
+        this.el = this.el || new Audio();
+        this.rad = casti.map(x => 'audio/' + this.nahravky[x]);
+        this.dalsia();
+        return;
+      }
+      if (!('speechSynthesis' in window)) return;
+      const u = new SpeechSynthesisUtterance(casti.join(' '));
       u.lang = this.voice ? this.voice.lang : 'sk-SK';
       if (this.voice) u.voice = this.voice;
       u.rate = 0.92;
       speechSynthesis.speak(u);
     },
+    dalsia() {
+      const src = this.rad.shift();
+      if (!src) return;
+      this.el.src = src;
+      this.el.onended = () => this.dalsia();
+      this.el.play().catch(() => {});
+    },
     stop() {
+      this.rad = [];
+      if (this.el) this.el.pause();
       if ('speechSynthesis' in window) speechSynthesis.cancel();
     },
   };
@@ -333,7 +360,9 @@
       Hlas.say('Dobrý deň. Takto budem hovoriť počas cvičenia.');
       S.voice = was;
     };
-    $('#vinfo').textContent = !('speechSynthesis' in window)
+    $('#vinfo').textContent = Object.keys(Hlas.nahravky).length
+      ? 'Hlas: nahrávky ElevenLabs.'
+      : !('speechSynthesis' in window)
       ? 'Tento prehliadač nevie čítať nahlas – budú fungovať len pípnutia.'
       : Hlas.voice
         ? `Hlas: ${Hlas.voice.name}`
@@ -572,7 +601,7 @@
         ${c.pomocky.length ? `<p class="need">${chips(c.pomocky)}</p>` : ''}
         <h3>Východisková poloha</h3><ol class="steps">${c.start.map(x => `<li>${x}</li>`).join('')}</ol>
         ${S.seen[c.id] ? '' : '<p class="muted small">Tento cvik robíš prvýkrát – máš viac času na prípravu. Ťukni na „Ako na to“ pre celý postup.</p>'}`;
-      Hlas.say(`${ph.i === 0 ? 'Začíname.' : 'Ďalší cvik.'} ${c.nazov}.`);
+      Hlas.say([ph.i === 0 ? 'Začíname.' : 'Ďalší cvik.', `${c.nazov}.`]);
     } else if (ph.t === 'switch') {
       $('.p-phase', el).textContent = 'Vymeň stranu';
       $('.p-strana', el).textContent = strana;
