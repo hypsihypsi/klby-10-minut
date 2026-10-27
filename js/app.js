@@ -514,7 +514,7 @@
     lahko: 'Paráda. Keď to bude ľahké pár dní po sebe, skús pri niektorých cvikoch ťažšiu verziu – je napísaná pri každom cviku.',
     akurat: 'Presne tak to má byť. Zajtra ide ďalšia zostava.',
     narocne: 'Tak zajtra pomalšie a menej. Aj polovica stačí – hlavné je, že sa hýbeš.',
-    bolelo: 'Ten cvik zatiaľ rob menej alebo ho kľudne vynechaj. A keď to neprejde do ďalšieho dňa, zavolaj mi a zájdi k doktorovi alebo fyzioterapeutovi.',
+    bolelo: 'Ten cvik zatiaľ rob menej alebo ho kľudne vynechaj.',
   };
 
   function askClose() {
