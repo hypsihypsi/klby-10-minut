@@ -228,6 +228,7 @@ p { margin: 0 0 12px; }
 .an .dot { fill: var(--accent); }
 .an .lbl { fill: var(--muted); font: 700 12px var(--font-body); }
 .an .torso-x { fill: var(--fig2); opacity: 0.5; }
+.an .heel { fill: var(--skin-line); opacity: 0.5; }
 .an .knee { fill: var(--fig2); opacity: 0.6; }
 
 /* prehrávač */

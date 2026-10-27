@@ -136,8 +136,12 @@
       case 'mat':
         return `<rect class="mat" x="16" y="${FLOOR + 2}" width="268" height="6" rx="3"/>`;
       case 'glow': {
-        const c = at(pr.at);
-        return `<circle class="glow" cx="${n(c.x)}" cy="${n(c.y)}" r="${pr.r || 15}"/>`;
+        const c = at(pr.at), op = pr.op ? ` style="opacity:${n(0.35 * p[pr.op])}"` : '';
+        return `<circle class="glow" cx="${n(c.x)}" cy="${n(c.y)}" r="${pr.r || 15}"${op}/>`;
+      }
+      case 'blockK': {
+        const c = mix(J.K1, J.K2, 0.5);
+        return `<rect class="blk" x="${n(c.x - 7)}" y="${n(c.y - 13)}" width="14" height="26" rx="3"/>`;
       }
       case 'ball': {
         const c = add(at(pr.at), { x: pr.dx || 0, y: pr.dy || 0 });
@@ -317,6 +321,30 @@
     return s;
   }
 
+  /* ---------- Dúha prstami, pravé chodidlo spredu ----------
+     a = -1 vonkajšia hrana (malíček) na zemi, 0 = vrchol oblúka, 1 = palec na zemi */
+  const DUHA = { a: -1 };
+
+  function drawDuha(p) {
+    const a = p.a, floorY = 206, ankle = { x: 150, y: 120 };
+    const c = { x: 150 + 42 * a, y: floorY - 12 - 50 * (1 - a * a) };
+    const tilt = 16 * a;
+    const toes = [[-27, 5.5], [-15, 6], [-3, 6.5], [10, 7], [26, 9.5]];
+    let s = `<line class="floor" x1="0" y1="${floorY + 1.5}" x2="300" y2="${floorY + 1.5}"/>`;
+    s += `<path class="trace" d="M100 ${floorY - 34} Q150 ${floorY - 132} 200 ${floorY - 34}"/>`;
+    s += `<text class="lbl" x="70" y="${floorY + 22}" text-anchor="middle">malíček</text><text class="lbl" x="230" y="${floorY + 22}" text-anchor="middle">palec</text>`;
+    s += `<ellipse class="heel" cx="150" cy="${floorY - 9}" rx="20" ry="10"/>`;
+    s += `<text class="lbl" x="150" y="${floorY + 22}" text-anchor="middle">päta na zemi</text>`;
+    s += skin([{ x: 150, y: -30 }, ankle], 44);
+    s += skin([ankle, c], 28);
+    s += `<g transform="translate(${n(c.x)} ${n(c.y)}) rotate(${n(tilt)})">`;
+    s += `<rect class="sk-f" x="-38" y="-10" width="76" height="22" rx="11"/>`;
+    for (const [x, r] of toes) s += `<circle class="sk-f" cx="${x}" cy="-10" r="${r}"/>`;
+    s += `</g>`;
+    if (a > 0.6) s += `<text class="lbl" x="150" y="40" text-anchor="middle" opacity="${n((a - 0.6) / 0.4)}">klenba ostáva hore</text>`;
+    return s;
+  }
+
   /* ---------- Engine ---------- */
   const RIGS = {
     body: { def: a => Object.assign({}, BODY, a.view === 'front' ? BODY_FRONT : null), draw: drawBody },
@@ -325,6 +353,7 @@
     predlaktie: { def: () => TWIST, draw: drawTwist },
     dlan: { def: () => GRIP, draw: drawGrip },
     kniha: { def: () => BOOK, draw: drawBook },
+    duha: { def: () => DUHA, draw: drawDuha },
   };
 
   function prep(anim) {
