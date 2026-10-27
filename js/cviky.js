@@ -809,7 +809,7 @@ window.CVIKY = [
     pomocky: ['pevná stolička s operadlom'],
     kolko: '6–8 pomalých opakovaní',
     preco: 'Hrudná chrbtica – časť medzi lopatkami – má tendenciu tuhnúť do hrbu. Keď sa neohne ona, musia za ňu pracovať krk a ramená. Jemné prehnutie cez operadlo vracia pohyb tam, kde chýba.',
-    bezpecnost: 'Stolička musí byť pevná, nie na kolieskach. Pri osteoporóze rob len veľmi malý rozsah a poraď sa s lekárom.',
+    bezpecnost: 'Stolička musí byť pevná, nie na kolieskach.',
     start: [
       'Sadni si úplne dozadu, aby horná hrana operadla bola pod lopatkami.',
       'Dlane daj za hlavu, lakte smerujú dopredu – ruky podopierajú hlavu.',
@@ -993,7 +993,6 @@ window.CVIKY = [
     strany: ['Pravý členok na kolene', 'Ľavý členok na kolene'],
     kolko: '20 s natiahnutie + 3× 5 s zdvih kolena, každá strana',
     preco: 'Bedrový kĺb sa má vedieť otáčať von – pri obúvaní, sadaní do auta, pri chôdzi. Keď to nevie, krútenie preberajú kríže a kolená. Cvik najprv uvoľní zadok a potom ho posilní presne na konci rozsahu, kde býva najslabší.',
-    bezpecnost: 'Pri umelom bedrovom kĺbe tento cvik nerob bez súhlasu lekára.',
     start: [
       'Sadni si na prednú časť stoličky, chodidlá na zemi.',
       'Polož pravý členok na ľavé koleno – nohy tvoria číslo 4. Ak to nejde, polož členok nižšie na holeň.',

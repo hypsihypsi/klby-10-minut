@@ -349,7 +349,7 @@
       </section>
       <section class="card">
         <h3>Dôležité</h3>
-        <p>Mami, toto sú cviky na udržanie kĺbov v pohybe, nie liečba. Ak máš bolesť, ktorá neprechádza, umelý kĺb, čerstvý úraz alebo operáciu, osteoporózu či závraty, ukáž cviky lekárovi alebo fyzioterapeutovi a nechaj si poradiť, čo vynechať.</p>
+        <p>Mami, toto sú cviky na udržanie kĺbov v pohybe, nie liečba. Keď ťa pri niečom bolí, ten cvik kľudne vynechaj.</p>
         <p class="muted small">Záznamy o cvičení sú uložené len v tomto prehliadači.</p>
       </section>`;
     app.querySelectorAll('input[name="tema"]').forEach(r => (r.onchange = () => {
