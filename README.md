@@ -16,6 +16,9 @@ Statická stránka bez build kroku – beží na GitHub Pages a dá sa pridať n
 - `js/anim.js` – animované postavičky (SVG). Animácia = rig + kľúčové pózy.
 - `js/app.js` – obrazovky, prehrávač, ukladanie.
 
+## Verzia súborov
+Pri zmene CSS/JS zvýš `?v=` v `index.html`, aby prehliadače (aj appka na ploche) hneď načítali novú verziu.
+
 ## Pridanie cviku
 1. Skopíruj podobný cvik v `CVIKY`, zmeň `id`, texty a pózy v `anim.keys`.
 2. Pridaj `['id', sekundy]` do zostavy v `ZOSTAVY`.
